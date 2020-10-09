@@ -6,18 +6,28 @@ lat = list(data["LON"])
 lon = list(data["LAT"])
 elev = list(data["ELEV"])
 
-html = """<h4>Volcano information:</h4>
-Height: %s m
-"""
+
+def color_producer(elevation):
+
+    if elevation <= 1000:
+        return "green",
+    elif 1000 <= elevation < 3000:
+        return 'orange'
+    else:
+        return "red"
+
 
 map = folium.Map(location=[74, -123], tiles="Stamen Terrain")
 
 theg = folium.FeatureGroup(name="my Map")
 
 for lt, ln, el in zip(lat, lon, elev):
-    iframe = folium.IFrame(html=html % str(el), width=200, height=100)
-    theg.add_child(folium.Marker(
-        location=[lt, ln], popup=str(el) + "m", icon=folium.Icon(color='red')))
+    theg.add_child(folium.CircleMarker(
+        location=[lt, ln], popup=str(el) + "m", fill_color=color_producer(el), radius=8,
+        color="grey", fill_opacity=0.7))
+
+theg.add_child(folium.GeoJson(
+    data=(open('world.json', 'r', encoding=('utf-8-sig').read()))))
 
 map.add_child(theg)
-map.save("Map.html")
+map.save("Map1.html")
